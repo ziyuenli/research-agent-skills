@@ -1,0 +1,4 @@
+interface:
+  display_name: "Revise Reviewer Comments"
+  short_description: "Revise manuscripts from reviewer feedback"
+  default_prompt: "Use $revise-reviewer-comments to address reviewer feedback and produce timestamped revised DOCX files."
