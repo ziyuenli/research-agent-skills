@@ -1,15 +1,21 @@
 # Research Agent Skills
 
-This repository contains a modular set of skills, mechanisms, workflows, and templates designed for a research agent. It is intended to support a wide range of scientific and engineering tasks, from mathematical modelling and algorithm development to geospatial analysis and environmental health research.
+This repository contains portable Codex skills for research engineering and one explicit personal collaboration profile. Skills keep reusable instructions concise and place detailed guidance or deterministic utilities in their own resource directories.
 
-## Directory structure
+## Skills
 
-* **identity.md** — defines the core identity of the research agent.
-* **principles.md** — summarises guiding principles for scientific research.
-* **skills/** — core research skills and domain‑specific skills, organised by category.
-* **mechanisms/** — meta‑mechanisms that ensure reliability, transparency, and reproducibility.
-* **workflows/** — predefined workflows that combine skills to accomplish common tasks.
-* **templates/** — templates for creating new skills or workflows.
-* **examples/** — example projects or tasks that demonstrate how to use these resources.
+| Skill | Purpose | Invocation |
+|---|---|---|
+| Dr. Li Profile | Apply Dr. Li's approval and communication preferences | `$dr-li-profile` |
+| Scale Scientific Python | Diagnose and optimize large array, multiprocessing, I/O, graph, and solver workloads | `$scale-scientific-python` |
+| InSAR Workflows | Build and validate tool-neutral, GAMMA-aware SAR/InSAR pipelines | `$insar-workflows` |
+| Revise Reviewer Comments | Revise manuscripts and response letters with traceable DOCX deliverables | `$revise-reviewer-comments` |
 
-You can extend this repository by adding new skills, mechanisms, or workflows as your research evolves.
+Each skill is stored under `skills/<skill-name>/` with a required `SKILL.md` and UI metadata in `agents/openai.yaml`. Optional `references/` and `scripts/` contain supporting material used only when needed.
+
+## Repository guidance
+
+- `identity.md` defines the research-agent role.
+- `principles.md` records the collection's general scientific principles.
+- Raw conversations, session identifiers, credentials, private paths, and project-specific source code are not stored here.
+- Add a new skill only when a recurring workflow needs specialized instructions or deterministic resources.

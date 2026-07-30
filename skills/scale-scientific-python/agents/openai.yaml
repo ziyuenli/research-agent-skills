@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scale Scientific Python"
+  short_description: "Optimize large scientific Python workloads"
+  default_prompt: "Use $scale-scientific-python to diagnose and optimize this large scientific Python workload."

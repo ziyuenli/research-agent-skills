@@ -1,0 +1,4 @@
+interface:
+  display_name: "InSAR Workflows"
+  short_description: "Build and validate robust InSAR workflows"
+  default_prompt: "Use $insar-workflows to inspect and improve this InSAR processing workflow."
