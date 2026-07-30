@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operate Research Compute"
+  short_description: "Diagnose research servers without breaking access"
+  default_prompt: "Use $operate-research-compute to diagnose this research workstation, server, storage, VPN, or remote-access problem safely."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Distill Agent Skills"
+  short_description: "Distill chats and projects into reusable skills"
+  default_prompt: "Use $distill-agent-skills to extract reusable lessons from my chats and projects, validate the changes, and deploy the resulting Codex skills."

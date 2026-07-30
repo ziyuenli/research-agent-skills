@@ -18,6 +18,8 @@ Preserve scientific meaning and source products while making the workflow reprod
 
 For GAMMA formats and interface conventions, read [gamma-adapter.md](references/gamma-adapter.md). Use `scripts/query_gamma_par.py` for deterministic parameter lookup instead of fragile line-number parsing.
 
+For phase-field notation, closure, phase-unwrapping simulations, coherence-matrix regularization, phase-linking validation, and CRLB interpretation, read [phase-modeling-validation.md](references/phase-modeling-validation.md).
+
 ## Handle invalid and void samples scientifically
 
 - Do not assume that `0+0j`, `1+0j`, zero amplitude, NaN, or another value is invalid solely from its numeric value.
@@ -58,6 +60,8 @@ Isolate processor-specific commands, status handling, filenames, and parameter k
 - Check expected product counts and one-to-one metadata pairing.
 - Run a small synthetic or cropped case before full-scene processing.
 - Report commands that could not be exercised because licensed software, data, or a display was unavailable.
+- When validating phase estimators, report both local error and gross-error probability. Do not interpret wrapped or circular RMSE through an ordinary unbiased CRLB when cycle slips are frequent.
+- Evaluate a coherence regularizer on the downstream phase objective as well as matrix error; a lower coherence-magnitude loss need not produce lower phase error.
 
 ## Modify existing pipelines conservatively
 

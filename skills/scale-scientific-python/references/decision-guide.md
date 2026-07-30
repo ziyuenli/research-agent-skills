@@ -25,8 +25,12 @@ For each design, calculate:
 - serialization volume;
 - expected storage bandwidth per worker;
 - native thread count multiplied by process count.
+- NUMA nodes crossed by each process and whether first-touch placement is controlled;
+- local-disk versus network-filesystem traffic for the actual access pattern.
 
 If throughput plateaus as workers increase, test for storage saturation, memory bandwidth, lock contention, queue backpressure, task imbalance, native threading, or an effectively serial setup/merge stage.
+
+Measure a native executable separately from its Python wrapper. Inspect the process's effective environment and linked runtime; shell configuration does not prove what an already-running process inherited.
 
 ## Chunk and memmap contracts
 
@@ -40,6 +44,7 @@ Test:
 4. non-contiguous requested indices;
 5. interrupted output and rerun behavior;
 6. full-versus-chunked numerical equivalence.
+7. cross-chunk constraints and global offsets for graph or inverse problems.
 
 ## Sparse systems
 

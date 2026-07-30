@@ -11,10 +11,13 @@ Optimize from measured evidence while preserving scientific results. Do not clai
 
 1. Define the invariant output, numerical tolerance, ordering, dtype, shape, and reproducibility requirements.
 2. Measure the current path on representative data. Separate compute time, storage I/O, allocation, serialization, synchronization, and result collection.
+   Inspect the effective native thread count, CPU affinity, NUMA placement, mount type, and storage location when the workload runs on a server.
 3. Estimate peak resident memory, temporary allocations, bytes read and written, and process multiplication before selecting an approach.
-4. Choose the smallest intervention supported by the evidence. Read [decision-guide.md](references/decision-guide.md) when comparing memory layouts, concurrency models, or sparse-solver strategies.
-5. Implement one material change at a time and retain a correct baseline until equivalence is established.
-6. Validate correctness first, then benchmark warm and cold behavior where caching matters.
+4. Rank viable approaches and recommend one using the current evidence. Read [decision-guide.md](references/decision-guide.md) when comparing memory layouts, concurrency models, or sparse-solver strategies.
+5. For an initial algorithm draft, implement one minimal end-to-end path. Do not add alternative solvers, preconditioners, backends, flags, or abstraction layers merely because they were discussed.
+6. Validate the central assumption and scientific output, then iterate only when evidence or an explicit comparison request justifies another approach.
+7. Implement one material change at a time and retain a correct baseline until equivalence is established.
+8. Validate correctness first, then benchmark warm and cold behavior where caching matters.
 
 ## Preserve data semantics
 
@@ -36,9 +39,11 @@ Optimize from measured evidence while preserving scientific results. Do not clai
 ## Parallelize deliberately
 
 - Determine whether work is CPU-bound, I/O-bound, memory-bandwidth-bound, or blocked by native-library threading.
+- Distinguish Python workers from native OpenMP, BLAS, solver, or compiled-extension threads. A large thread count is not evidence of a Python GIL bottleneck.
 - Prefer processes for CPU-bound Python work, but account for startup, pickling, result transfer, and duplicated state.
 - Pass compact descriptors to workers; reopen memmaps or shared resources inside the worker when practical.
 - Prevent oversubscription from BLAS, OpenMP, NumPy/SciPy, or nested process pools.
+- Test `1, 2, 4, ...` workers under fixed native-thread settings. Select the knee of measured throughput rather than the logical CPU count.
 - Choose task sizes large enough to amortize dispatch and small enough to balance skew and memory.
 - Use explicit worker error propagation, termination, joins, and output-completeness checks.
 
@@ -49,6 +54,15 @@ Optimize from measured evidence while preserving scientific results. Do not clai
 - Do not cache an object across iterations merely because dimensions match; state the dependency invariant.
 - Benchmark setup and solve phases separately. A cheaper setup can lose overall if convergence worsens.
 - Treat `np.add.at`, sparse construction, and compiled kernels as candidates to measure, not automatic improvements.
+- Separate static topology from per-observation values. Reuse node mappings, edge endpoints, CSR structure, and graph partitions only when their dependency invariants hold.
+
+## Partition global problems carefully
+
+- Do not assume that blocking a raster preserves a global graph solution.
+- For local filters and gradients, use halos sized to the operator support.
+- For phase unwrapping, MCF, connected components, or Laplacian systems, identify cross-block constraints before partitioning.
+- Validate any overlap-and-reconciliation method against a full small case. Report boundary discontinuities, component splits, global integer offsets, and loss of path consistency.
+- Use local scratch for metadata-heavy or line-oriented intermediate I/O only after comparing it with the mounted storage on the same access pattern.
 
 ## Report
 

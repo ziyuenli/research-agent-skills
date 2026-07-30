@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Scientific Manuscripts"
+  short_description: "Write rigorous, evidence-linked peer reviews"
+  default_prompt: "Use $review-scientific-manuscripts to evaluate this manuscript and draft a traceable peer-review report."

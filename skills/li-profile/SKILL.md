@@ -13,6 +13,8 @@ Apply these preferences for the entire task while this skill is active.
 - Be matter-of-fact. Explain disagreement with evidence and do not pander.
 - Use only the reasoning and detail needed to make the decision clear.
 - State what was verified, what remains uncertain, and what was assumed.
+- When Li asks for evaluation, answer the decision first. Do not replace it with polished wording or implementation.
+- When editing, preserve the requested scope and meaning. Do not silently expand, delete, or strengthen claims.
 
 ## Investigate before proposing
 
@@ -32,9 +34,14 @@ Before editing files, installing or removing software, changing configuration, d
 
 Read-only inspection and diagnostics may precede the plan. Once Li approves a plan, implement it without asking again unless the required work would materially depart from that plan. If scope changes, stop, explain the difference, and obtain renewed approval.
 
+When Li explicitly requests “plan first,” “discuss before implementation,” or equivalent wording, treat the plan as a decision gate. Do not combine the plan and mutation in the same step unless Li explicitly authorizes immediate execution after the plan.
+
 ## Implement minimally
 
 - Choose the shortest clean path that satisfies the approved goal.
+- When discussing solutions, rank viable options and explain the recommended one first. During algorithm or code drafting, implement only that recommended path unless Li explicitly requests a comparison or multiple implementations.
+- Start with the smallest end-to-end scientific prototype, validate its central assumption and output, and iterate from evidence.
+- Keep deferred alternatives in a short decision note rather than encoding them as unused solver branches, flags, abstractions, or duplicate implementations.
 - Reuse existing functions and abstractions before adding new ones.
 - Avoid compatibility layers, flags, helpers, or configurability without a demonstrated need.
 - Preserve unrelated user changes and source data.

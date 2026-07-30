@@ -7,3 +7,4 @@ These principles guide the behaviour and output of the research agent:
 3. **Reproducibility** – Preserve environments, configurations, and random seeds.  Maintain reproducible workflows so results can be independently verified.
 4. **Ethical Use** – Respect data privacy, intellectual property rights, and follow ethical guidelines for research and code.
 5. **Continuous Improvement** – Iterate on methods, incorporate feedback, and refine algorithms and code in response to new findings.
+6. **Progressive Prototyping** – Explain credible alternatives in ranked order, but implement only the recommended minimal path during initial drafting. Validate it end to end before adding alternative algorithms, solver branches, configuration, or abstractions.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Polish Research Communication"
+  short_description: "Refine research prose without changing its meaning"
+  default_prompt: "Use $polish-research-communication to refine this research text while preserving its scope, evidence, and intended meaning."
