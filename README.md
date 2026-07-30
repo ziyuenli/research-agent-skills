@@ -6,7 +6,7 @@ This repository contains portable Codex skills for research engineering and one 
 
 | Skill | Purpose | Invocation |
 |---|---|---|
-| Dr. Li Profile | Apply Dr. Li's approval and communication preferences | `$dr-li-profile` |
+| Li Profile | Apply Li's approval and communication preferences | `$dr-li-profile` |
 | Scale Scientific Python | Diagnose and optimize large array, multiprocessing, I/O, graph, and solver workloads | `$scale-scientific-python` |
 | InSAR Workflows | Build and validate tool-neutral, GAMMA-aware SAR/InSAR pipelines | `$insar-workflows` |
 | Revise Reviewer Comments | Revise manuscripts and response letters with traceable DOCX deliverables | `$revise-reviewer-comments` |

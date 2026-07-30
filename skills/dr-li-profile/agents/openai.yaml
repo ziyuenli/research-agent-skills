@@ -1,6 +1,6 @@
 interface:
-  display_name: "Dr. Li Profile"
-  short_description: "Apply Dr. Li’s collaboration preferences"
+  display_name: "Li Profile"
+  short_description: "Apply Li’s collaboration preferences"
   default_prompt: "Use $dr-li-profile to collaborate with me using my preferred approval and communication workflow."
 policy:
   allow_implicit_invocation: false
