@@ -24,6 +24,32 @@ Distinguish:
 
 They are not interchangeable constraints.
 
+## Validate phase-unwrapping refactors
+
+Freeze the scientific inputs and compare a refactored implementation with a
+trusted serial baseline before measuring speed:
+
+1. verify acquisition, interferogram, edge, node, level, and known-pixel index
+   mappings exactly;
+2. compare solved masks, their intersection and union, and counts added or
+   dropped at each level;
+3. compare phase on jointly solved pixels after applying the same reference or
+   gauge convention;
+4. report wrapped residuals modulo \(2\pi\), unwrapped residuals, per-
+   interferogram offsets, maximum error, quantiles, and failing counts;
+5. compare temporal and spatial closure residuals, MCF status and objective
+   where applicable, and integration residuals;
+6. compare full-array and chunked intermediates on a small exact case,
+   including final partial chunks and non-contiguous edge selections;
+7. confirm that completion metadata is updated only after every expected
+   interferogram is durably written.
+
+Do not call two products inconsistent merely because unsolved support differs,
+and do not call them equivalent from a low aggregate error that hides cycle
+slips or component-wise integer offsets. If multiple optimum flows are
+possible, compare objective, conservation, corrected phase, and downstream
+residuals in addition to raw flow-array equality.
+
 ## Design simulations from the claim
 
 1. Define the scientific feature the method must recover: spatial footprint, deformation history, discontinuity, decorrelation, or cycle error.
@@ -65,4 +91,3 @@ Require:
 - representative runtime separated into estimation, regularization, phase retrieval, and uncertainty calculation;
 - confidence intervals across independent trials;
 - explicit limitations for Gaussian looks, homogeneous samples, closure errors, unwrapping, and target misspecification.
-

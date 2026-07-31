@@ -36,6 +36,8 @@ For phase-field notation, closure, phase-unwrapping simulations, coherence-matri
 - Make `--rerun` or equivalent behavior targeted: remove or replace only products owned by the selected stage.
 - Quote shell paths, avoid ambiguous globs, check command status, and stop on missing mandatory inputs.
 - Capture invoked commands, relevant configuration, software version, reference date, and quality summaries.
+- Save selected interferogram and pseudo-interferogram baseline diagnostics with
+  the run products when they influence estimation or pruning.
 - Validate shell syntax and exercise discovery logic without launching expensive processing when possible.
 
 ## Integrate processors behind adapters
@@ -55,6 +57,9 @@ Isolate processor-specific commands, status handling, filenames, and parameter k
 
 - Confirm raster dimensions, dtype, byte order, and exact file size.
 - Compare input and output masks and count unresolved or unexpectedly changed pixels.
+- For phase-unwrapping refactors, compare masks first and phase only on jointly
+  solved pixels. Read [phase-modeling-validation.md](references/phase-modeling-validation.md)
+  for gauge, cycle, closure, and graph-mapping checks.
 - Inspect amplitude and phase behavior, not only complex equality.
 - Verify coregistration or offset quality using the processor's quality artifacts and spatial diagnostics.
 - Check expected product counts and one-to-one metadata pairing.
@@ -66,3 +71,18 @@ Isolate processor-specific commands, status handling, filenames, and parameter k
 ## Modify existing pipelines conservatively
 
 Inspect local wrappers and bindings before assuming return-value or error semantics. Reuse established project functions when they are correct. When adding automatic/manual fallback, preserve the failure evidence from the automatic path and make interactive requirements explicit.
+
+When refactoring phase unwrapping for chunking or multiprocessing, treat the
+scientific algorithm as fixed unless an algorithm change is explicitly in
+scope. Preserve:
+
+- acquisition and interferogram ordering;
+- edge orientation, edge IDs, node remapping, and connected-component choice;
+- reference nodes, known-solution slices, and level-to-level pixel mappings;
+- wrapping, closure, pruning, cost, MCF, and integration conventions;
+- the point at which solved masks and level-completion metadata become valid.
+
+Stream large intermediates without changing these mappings. Let workers compute
+independent chunks or interferograms, keep final HDF5 ownership explicit, and
+publish a completed level only after all expected interferograms have been
+written successfully.

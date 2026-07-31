@@ -21,16 +21,28 @@ Use threads when native code releases the GIL and shared-memory access is the ma
 For each design, calculate:
 
 - bytes of private state per worker;
+- PSS and private dirty memory per worker, not only RSS;
 - maximum in-flight input and output bytes;
 - serialization volume;
 - expected storage bandwidth per worker;
-- native thread count multiplied by process count.
+- native thread count multiplied by process count;
 - NUMA nodes crossed by each process and whether first-touch placement is controlled;
 - local-disk versus network-filesystem traffic for the actual access pattern.
 
 If throughput plateaus as workers increase, test for storage saturation, memory bandwidth, lock contention, queue backpressure, task imbalance, native threading, or an effectively serial setup/merge stage.
 
 Measure a native executable separately from its Python wrapper. Inspect the process's effective environment and linked runtime; shell configuration does not prove what an already-running process inherited.
+
+On Linux, interpret `MemAvailable`, page-cache size, PSS, shared clean/dirty,
+and private dirty pages together. Low `MemFree` alone is not evidence of
+pressure, and summed worker RSS can count the same shared pages repeatedly.
+Watch copy-on-write growth after `fork`, especially when inherited solver or
+preconditioner objects mutate internal buffers.
+
+On a multi-socket host, benchmark one NUMA node before spanning sockets. Pin
+workers and apply first touch or local allocation consistently; compare this
+with interleaving only when the working set cannot fit locally. Count physical
+cores separately from simultaneous-multithreading threads.
 
 ## Chunk and memmap contracts
 
@@ -60,10 +72,30 @@ Reuse topology or preconditioners only while their dependencies remain identical
 
 A matrix-free operator is attractive when explicit sparse assembly is a major memory or setup cost and the solver needs only matrix-vector products. An explicit matrix remains useful when a preconditioner or factorization requires it and amortizes its construction across many solves.
 
+A reusable solver context can cache topology, maps, capacities, costs, and
+allocation without providing a warm start. Check the library's repeated-run
+semantics. For a controlled comparison:
+
+1. feed every variant the same cached graph and observation rows;
+2. preserve graph insertion order, solver template types, cost/capacity types,
+   tolerances, and method options;
+3. compare setup, per-call initialization, solve, and result extraction;
+4. compare status, objective, flow or solution values, and downstream
+   residuals;
+5. then vary one solver type, dtype, or reuse policy at a time.
+
+Persistent contexts trade repeated setup for resident per-worker state.
+Measure both throughput and private memory at the intended worker count.
+
 ## Benchmark contract
 
 - Use the same input, tolerance, thread settings, cache state, and output checks.
 - Include a correctness baseline before performance comparisons.
-- Record wall time, CPU time where useful, peak RSS, bytes read/written, workers, iterations, and hardware.
+- Record wall time, CPU time where useful, peak RSS and PSS, private dirty
+  memory, bytes read/written, workers, native threads, affinity, NUMA policy,
+  iterations, and hardware.
 - Run enough repetitions to reveal variance.
 - Explain whether the result is a microbenchmark, representative subset, or full workload.
+- Do not infer the cause of a whole-run regression from a commit containing
+  multiple algorithm, dtype, storage, or execution changes. Replay the
+  suspected stage from fixed cached inputs.

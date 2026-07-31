@@ -18,6 +18,7 @@ Optimize from measured evidence while preserving scientific results. Do not clai
 6. Validate the central assumption and scientific output, then iterate only when evidence or an explicit comparison request justifies another approach.
 7. Implement one material change at a time and retain a correct baseline until equivalence is established.
 8. Validate correctness first, then benchmark warm and cold behavior where caching matters.
+9. When a whole-workflow runtime changes, benchmark the affected stage from fixed cached inputs before attributing the change to one component.
 
 ## Preserve data semantics
 
@@ -34,6 +35,8 @@ Optimize from measured evidence while preserving scientific results. Do not clai
 - Use memmap for shared, read-mostly, larger-than-RAM arrays when its access pattern is controlled. Flush completed outputs and store enough metadata to reopen them safely.
 - Write each output region from exactly one process unless synchronization is intentional.
 - Bound queues and in-flight tasks. A queue is not a substitute for a memory budget.
+- Do not send full-size result arrays through a queue merely because it is bounded. Use shared result slots, owned memmap slices, or a single streaming writer when serialization is material.
+- Keep final HDF5 writes in one process unless the storage contract explicitly supports concurrent writers. Mark a level complete only after every expected output is present.
 - Clean up incomplete temporary products or mark them invalid so reruns cannot consume partial data.
 
 ## Parallelize deliberately
@@ -43,18 +46,24 @@ Optimize from measured evidence while preserving scientific results. Do not clai
 - Prefer processes for CPU-bound Python work, but account for startup, pickling, result transfer, and duplicated state.
 - Pass compact descriptors to workers; reopen memmaps or shared resources inside the worker when practical.
 - Prevent oversubscription from BLAS, OpenMP, NumPy/SciPy, or nested process pools.
+- Set native-library thread limits before importing NumPy, SciPy, or compiled extensions, then verify the running workers inherited them.
 - Test `1, 2, 4, ...` workers under fixed native-thread settings. Select the knee of measured throughput rather than the logical CPU count.
 - Choose task sizes large enough to amortize dispatch and small enough to balance skew and memory.
 - Use explicit worker error propagation, termination, joins, and output-completeness checks.
+- On Linux, use PSS and private dirty memory to estimate process multiplication. Do not sum RSS across workers without separating shared, file-backed, and copy-on-write pages.
+- On multi-socket systems, test CPU affinity and first-touch memory placement. More workers can lose to cross-node traffic even when aggregate RAM is ample.
 
 ## Optimize sparse graphs and solvers
 
 - Avoid materializing COO/CSR matrices when a matrix-free operator provides the required operations more cheaply.
 - Cache graph topology, weights, diagonal terms, preconditioners, and work buffers only when their dependencies are unchanged.
 - Do not cache an object across iterations merely because dimensions match; state the dependency invariant.
+- Distinguish static-context reuse from a numerical warm start. Inspect whether each solver call reinitializes state, and benchmark setup, initialization, and solve separately.
+- When introducing a reusable context, hold solver algorithm, template types, dtypes, tolerances, ordering, and input values fixed. Test each additional change independently.
 - Benchmark setup and solve phases separately. A cheaper setup can lose overall if convergence worsens.
 - Treat `np.add.at`, sparse construction, and compiled kernels as candidates to measure, not automatic improvements.
 - Separate static topology from per-observation values. Reuse node mappings, edge endpoints, CSR structure, and graph partitions only when their dependency invariants hold.
+- A compact input dtype does not prove compact or faster solver internals. Check range safety, implicit conversions, internal working types, objective equality, and solution equality.
 
 ## Partition global problems carefully
 
